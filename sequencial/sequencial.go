@@ -6,93 +6,69 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 )
 
-type result struct {
-	numRows           int
-	peopleCount       int
-	commonName        string
-	commonNameCount   int
-	donationMonthFreq map[string]int
+type Result struct {
+	NumRows  int
+	MediaRow float64
 }
 
-// processRow takes a pipe-separated line and returns the firstName, fullName, and month.
-// this function was created to be somewhat compute intensive and not accurate.
-func processRow(text string) (firstName, fullName, month string) {
-	row := strings.Split(text, "|")
+// ggfggh
+func processRow(text string, columnIndex int) string {
 
-	// extract full name
-	fullName = strings.Replace(strings.TrimSpace(row[7]), " ", "", -1)
+	startPos := 0
 
-	// extract first name
-	name := strings.TrimSpace(row[7])
-	if name != "" {
-		startOfName := strings.Index(name, ", ") + 2
-		if endOfName := strings.Index(name[startOfName:], " "); endOfName < 0 {
-			firstName = name[startOfName:]
-		} else {
-			firstName = name[startOfName : startOfName+endOfName]
+	for i := 0; i < columnIndex; i++ {
+		pos := strings.Index(text[startPos:], ";")
+
+		if pos == -1 {
+			return ""
 		}
-		if strings.HasSuffix(firstName, ",") {
-			firstName = strings.Replace(firstName, ",", "", -1)
-		}
+
+		startPos += pos + 1
 	}
 
-	// extract month
-	date := strings.TrimSpace(row[13])
-	if len(date) == 8 {
-		month = date[:2]
-	} else {
-		month = "--"
+	endPos := strings.Index(text[startPos:], ";")
+	if endPos == -1 {
+		return text[startPos:]
 	}
-
-	return firstName, fullName, month
+	return text[startPos : startPos+endPos]
 }
 
-// sequential processes a file line by line using processRow.
-func Sequential(file string) result {
-	res := result{donationMonthFreq: map[string]int{}}
-
-	start := time.Now()
-
-	end := time.Now() // Captura o tempo de término
-
-	duration := end.Sub(start) // Calcula a diferença de tempo
+func Acidente(file string) {
 
 	f, err := os.Open(file)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("Tempo gasto abrindo arquivo: %v\n", duration)
-
-	// track full names
-	fullNamesRegister := make(map[string]bool)
-
-	// track first name frequency
-	firstNameMap := make(map[string]int)
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
+
+	stateCounts := make(map[string]int)
+
+	dateColumnIndex := 4
+	ufAcidenteColumn := 3
+
 	for scanner.Scan() {
 		row := scanner.Text()
-		firstName, fullName, month := processRow(row)
 
-		// add fullname
-		fullNamesRegister[fullName] = true
+		date := processRow(row, dateColumnIndex)
 
-		// update common firstName
-		firstNameMap[firstName]++
-		if firstNameMap[firstName] > res.commonNameCount {
-			res.commonName = firstName
-			res.commonNameCount = firstNameMap[firstName]
+		if strings.HasPrefix(date, "2022") {
+			ufAcidente := processRow(row, ufAcidenteColumn)
+			stateCounts[ufAcidente]++
 		}
-		// add month freq
-		res.donationMonthFreq[month]++
-		// update numRows
-		res.numRows++
-		res.peopleCount = len(fullNamesRegister)
+
 	}
 
-	return res
+	for state, count := range stateCounts {
+		fmt.Printf("%s: %d\n", state, count)
+	}
 }
+
+// num_acidente;chv_localidade;data_acidente;uf_acidente;ano_acidente;mes_acidente;mes_ano_acidente;codigo_ibge;
+// dia_semana;fase_dia;tp_acidente;cond_meteorologica;end_acidente;num_end_acidente;cep_acidente;bairro_acidente;
+// km_via_acidente;latitude_acidente;longitude_acidente;hora_acidente;tp_rodovia;cond_pista;tp_cruzamento;tp_pavimento;
+// tp_curva;lim_velocidade;tp_pista;ind_guardrail;ind_cantcentral;ind_acostamento;qtde_acidente;qtde_acid_com_obitos
+// ;qtde_envolvidos;qtde_feridosilesos;qtde_obitos

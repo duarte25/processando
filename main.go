@@ -7,13 +7,28 @@ import (
 )
 
 func main() {
+	// Contagem de todo o processo
 	start := time.Now()
 
-	acidente.Acidente("Acidentes_DadosAbertos_20230412.csv")
+	result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv")
 
-	end := time.Now() // Captura o tempo de término
+	// Conte quanto tempo durou o processo
+	end := time.Now()
+	duration := end.Sub(start)
 
-	duration := end.Sub(start) // Calcula a diferença de tempo
+	// Encontrar o estado com o maior número de ocorrências
+	var maxUf string
+	var maxCount int
+	for uf, count := range result {
+		if count > maxCount {
+			maxUf = uf
+			maxCount = count
+		}
+	}
 
-	fmt.Printf("Tempo gasto no precesso sequencial: %v\n", duration)
+	// Imprimir o resultado
+	fmt.Printf("Estado com maior número de ocorrências: %s (%d ocorrências)\n", maxUf, maxCount)
+	fmt.Println("Resultado: ", result)
+
+	fmt.Printf("Tempo gasto: %v\n", duration)
 }
