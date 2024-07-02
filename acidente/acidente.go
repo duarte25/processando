@@ -167,3 +167,48 @@ func findColumnIndex(file *os.File, columnName string) int {
 	}
 	return -1 // Coluna não encontrada
 }
+
+/*
+txt :="AAAA;BBBB;CCCC;DDDD;EEEE"
+       0    1    2    3    4
+indice := 0
+nextColumn(txt,&indice,2) -> "CCCC"
+nextColumn(txt,&indice,1) -> "EEEE"
+*/
+
+// nextColumn retorna a próxima coluna a partir do índice atual.
+// Ela também atualiza o índice atual para a próxima posição.
+func nextColumn(line string, idx *int, sep string, steps int) string {
+	startPos := *idx
+	endPos := strings.Index(line, sep)
+	///
+	if endPos == -1 {
+		return line[startPos:]
+	} else {
+		return line[startPos:endPos]
+	}
+}
+
+func nextColumn(line string, idx *int, sep string, steps int) string {
+	startPos := *idx
+	endPos := strings.Index(line[startPos:], sep) + startPos
+
+	///
+
+	*idx = endPos + 1
+	fmt.Println(startPos, endPos)
+	if endPos == -1 {
+		return line[startPos:]
+	} else {
+		return line[startPos:endPos]
+	}
+}
+
+func Teste() {
+	txt := "AAAA;BBBB;CCCC;DDDD;EEEE"
+	idx := 0
+
+	fmt.Println(nextColumn(txt, &idx, ";", 0)) // "AAAA"
+	fmt.Println(nextColumn(txt, &idx, ";", 1)) // "CCCC"
+	fmt.Println(nextColumn(txt, &idx, ";", 1)) // "EEEE"
+}
