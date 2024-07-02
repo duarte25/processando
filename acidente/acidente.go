@@ -14,7 +14,7 @@ const (
 	numParts      = 8   // Número de partes para dividir o arquivo
 )
 
-func Acidente(filePath string) map[string]int {
+func Acidente(filePath, indexToColumn, dateColumn string) map[string]int {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -23,8 +23,8 @@ func Acidente(filePath string) map[string]int {
 	defer file.Close()
 
 	// Encontrar o índice da coluna desejada
-	idxColumn := findColumnIndex(file, "uf_acidente")
-	dateColumnIndex := findColumnIndex(file, "data_acidente")
+	idxColumn := findColumnIndex(file, indexToColumn)
+	dateColumnIndex := findColumnIndex(file, dateColumn)
 	if idxColumn == -1 || dateColumnIndex == -1 {
 		log.Fatal("Coluna uf_acidente ou data_acidente não encontrada no cabeçalho")
 	}

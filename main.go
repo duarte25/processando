@@ -10,7 +10,7 @@ func main() {
 	// Contagem de todo o processo
 	start := time.Now()
 
-	result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv")
+	result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "cond_meteorologica", "data_acidente")
 
 	// Conte quanto tempo durou o processo
 	end := time.Now()
