@@ -10,8 +10,7 @@ import (
 )
 
 const (
-	maxGoroutines = 100 // Limite de goroutines simultâneas
-	numParts      = 8   // Número de partes para dividir o arquivo
+	numParts = 8 // Número de partes para dividir o arquivo
 )
 
 func Acidente(filePath, indexToColumn, dateColumn string) map[string]int {
@@ -37,7 +36,7 @@ func Acidente(filePath, indexToColumn, dateColumn string) map[string]int {
 
 	// Dividindo para conquistar
 	fileSize := fileInfo.Size()
-	partSize := fileSize / numParts
+	partSize := fileSize / int64(numParts)
 
 	var wg sync.WaitGroup
 	var counts sync.Map
@@ -97,49 +96,24 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 			break
 		}
 
-		// Filtrar para alguma coluna por exemplo data
-		dateStartPos := 0
-		for i := 0; i < dateColumnIndex; i++ {
-			pos := strings.Index(line[dateStartPos:], ";")
-			if pos == -1 {
-				break
-			}
-			dateStartPos += pos + 1
+		idx := 0
+		var date string
+		for i := 0; i <= dateColumnIndex; i++ {
+			date = NextColumn(line, &idx, ";")
 		}
 
-		dateEndPos := strings.Index(line[dateStartPos:], ";")
-		if dateEndPos == -1 {
-			dateEndPos = len(line)
-		} else {
-			dateEndPos += dateStartPos
-		}
-
-		date := line[dateStartPos:dateEndPos]
-		if !strings.HasPrefix(date, "2022") {
+		if !strings.HasPrefix(date, "2021") {
 			currentPos += int64(len(line))
 			continue
 		}
 
-		// Processar uf_acidente
-		startPos := 0
-		for i := 0; i < idxColumn; i++ {
-			pos := strings.Index(line[startPos:], ";")
-			if pos == -1 {
-				break
-			}
-			startPos += pos + 1
+		idx = 0
+		var uf string
+		for i := 0; i <= idxColumn; i++ {
+			uf = NextColumn(line, &idx, ";")
 		}
 
-		endPos := strings.Index(line[startPos:], ";")
-		if endPos == -1 {
-			endPos = len(line)
-		} else {
-			endPos += startPos
-		}
-
-		uf := line[startPos:endPos]
 		localCounts[uf]++
-
 		currentPos += int64(len(line))
 	}
 
@@ -166,49 +140,4 @@ func findColumnIndex(file *os.File, columnName string) int {
 		}
 	}
 	return -1 // Coluna não encontrada
-}
-
-/*
-txt :="AAAA;BBBB;CCCC;DDDD;EEEE"
-       0    1    2    3    4
-indice := 0
-nextColumn(txt,&indice,2) -> "CCCC"
-nextColumn(txt,&indice,1) -> "EEEE"
-*/
-
-// nextColumn retorna a próxima coluna a partir do índice atual.
-// Ela também atualiza o índice atual para a próxima posição.
-func nextColumn(line string, idx *int, sep string, steps int) string {
-	startPos := *idx
-	endPos := strings.Index(line, sep)
-	///
-	if endPos == -1 {
-		return line[startPos:]
-	} else {
-		return line[startPos:endPos]
-	}
-}
-
-func nextColumn(line string, idx *int, sep string, steps int) string {
-	startPos := *idx
-	endPos := strings.Index(line[startPos:], sep) + startPos
-
-	///
-
-	*idx = endPos + 1
-	fmt.Println(startPos, endPos)
-	if endPos == -1 {
-		return line[startPos:]
-	} else {
-		return line[startPos:endPos]
-	}
-}
-
-func Teste() {
-	txt := "AAAA;BBBB;CCCC;DDDD;EEEE"
-	idx := 0
-
-	fmt.Println(nextColumn(txt, &idx, ";", 0)) // "AAAA"
-	fmt.Println(nextColumn(txt, &idx, ";", 1)) // "CCCC"
-	fmt.Println(nextColumn(txt, &idx, ";", 1)) // "EEEE"
 }
