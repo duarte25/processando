@@ -4,7 +4,7 @@ import "strings"
 
 // nextColumn retorna a próxima coluna a partir do índice atual.
 // Ela também atualiza o índice atual para a próxima posição.
-func NextColumn(line string, idx *int, sep string) string {
+func nextColumn(line string, idx *int, sep string) string {
 	startPos := *idx
 	endPos := strings.Index(line[startPos:], sep)
 

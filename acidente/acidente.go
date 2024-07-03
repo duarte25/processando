@@ -2,7 +2,6 @@ package acidente
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -64,65 +63,6 @@ func Acidente(filePath, indexToColumn, dateColumn string) map[string]int {
 	})
 
 	return result
-}
-
-func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex int, wg *sync.WaitGroup, counts *sync.Map) {
-	defer wg.Done()
-
-	file, err := os.Open(filePath)
-	if err != nil {
-		fmt.Println("Erro ao abrir o arquivo:", err)
-		return
-	}
-	defer file.Close()
-
-	file.Seek(startOffset, 0)
-	reader := bufio.NewReader(file)
-
-	// Ajustar o início para o início da próxima linha
-	if startOffset > 0 {
-		_, err = reader.ReadString('\n')
-		if err != nil {
-			fmt.Println("Erro ao ajustar o início da linha:", err)
-			return
-		}
-	}
-
-	localCounts := make(map[string]int)
-	currentPos := startOffset
-	for currentPos < endOffset {
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			break
-		}
-
-		idx := 0
-		var date string
-		for i := 0; i <= dateColumnIndex; i++ {
-			date = NextColumn(line, &idx, ";")
-		}
-
-		if !strings.HasPrefix(date, "2021") {
-			currentPos += int64(len(line))
-			continue
-		}
-
-		idx = 0
-		var uf string
-		for i := 0; i <= idxColumn; i++ {
-			uf = NextColumn(line, &idx, ";")
-		}
-
-		localCounts[uf]++
-		currentPos += int64(len(line))
-	}
-
-	for uf, count := range localCounts {
-		actual, _ := counts.LoadOrStore(uf, count)
-		if actual != count {
-			counts.Store(uf, actual.(int)+count)
-		}
-	}
 }
 
 func findColumnIndex(file *os.File, columnName string) int {
