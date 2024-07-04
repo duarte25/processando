@@ -2,6 +2,7 @@ package acidente
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -12,7 +13,7 @@ const (
 	numParts = 8 // Número de partes para dividir o arquivo
 )
 
-func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]int {
+func Acidente(filePath, indexToColumn, dateColumn, year string) {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -23,7 +24,11 @@ func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]int {
 	// Encontrar o índice da coluna desejada
 	idxColumn := findColumnIndex(file, indexToColumn)
 	dateColumnIndex := findColumnIndex(file, dateColumn)
-	if idxColumn == -1 || dateColumnIndex == -1 {
+
+	amountDeathColumn := findColumnIndex(file, "qtde_obitos")
+	amountInvolvedColumn := findColumnIndex(file, "qtde_envolvidos")
+
+	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 {
 		log.Fatal("Coluna uf_acidente ou data_acidente não encontrada no cabeçalho")
 	}
 
@@ -49,20 +54,24 @@ func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]int {
 		}
 
 		wg.Add(1)
-		go processFilePart(filePath, year, startOffset, endOffset, idxColumn, dateColumnIndex, &wg, &counts)
+		go processFilePart(filePath, year, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, &wg, &counts)
 	}
 
 	// Aguardar todas as goroutines
 	wg.Wait()
 
-	// Coletar resultados do sync.Map
-	result := make(map[string]int)
+	// Copiar os dados do sync.Map para um novo map[string]UFData
+	// Copiar os dados do sync.Map para o map[string]UFData
+	result := make(map[string]UFData)
 	counts.Range(func(key, value interface{}) bool {
-		result[key.(string)] = value.(int)
+		uf := key.(string)
+		data := value.(*UFData)
+		result[uf] = *data
 		return true
 	})
 
-	return result
+	// Exibir o mapa de dados copiados
+	fmt.Println(result)
 }
 
 func findColumnIndex(file *os.File, columnName string) int {
