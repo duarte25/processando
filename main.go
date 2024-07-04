@@ -10,7 +10,8 @@ func main() {
 	// Contagem de todo o processo
 	start := time.Now()
 
-	result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente")
+	// Passarei sempre date aqui mas estou pensando em injetar lá no algoritmo pois provavelmente sempre usarei ele.. Vamos ve
+	result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2022")
 
 	// Conte quanto tempo durou o processo
 	end := time.Now()

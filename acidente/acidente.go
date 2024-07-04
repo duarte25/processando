@@ -12,7 +12,7 @@ const (
 	numParts = 8 // Número de partes para dividir o arquivo
 )
 
-func Acidente(filePath, indexToColumn, dateColumn string) map[string]int {
+func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]int {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -49,7 +49,7 @@ func Acidente(filePath, indexToColumn, dateColumn string) map[string]int {
 		}
 
 		wg.Add(1)
-		go processFilePart(filePath, startOffset, endOffset, idxColumn, dateColumnIndex, &wg, &counts)
+		go processFilePart(filePath, year, startOffset, endOffset, idxColumn, dateColumnIndex, &wg, &counts)
 	}
 
 	// Aguardar todas as goroutines
@@ -81,3 +81,13 @@ func findColumnIndex(file *os.File, columnName string) int {
 	}
 	return -1 // Coluna não encontrada
 }
+
+/*
+num_acidente;chv_localidade;data_acidente;uf_acidente;ano_acidente;mes_acidente;mes_ano_acidente;codigo_ibge;
+dia_semana;fase_dia;tp_acidente;cond_meteorologica;end_acidente;num_end_acidente;cep_acidente;bairro_acidente;
+km_via_acidente;latitude_acidente;longitude_acidente;hora_acidente;tp_rodovia;cond_pista;tp_cruzamento;
+tp_pavimento;tp_curva;lim_velocidade;tp_pista;ind_guardrail;ind_cantcentral;ind_acostamento;qtde_acidente;
+qtde_acid_com_obitos;qtde_envolvidos;qtde_feridosilesos;qtde_obitos
+*/
+
+// uf_acidente, ano_acidente,

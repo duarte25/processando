@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex int, wg *sync.WaitGroup, counts *sync.Map) {
+func processFilePart(filePath, year string, startOffset, endOffset int64, idxColumn, dateColumnIndex int, wg *sync.WaitGroup, counts *sync.Map) {
 	defer wg.Done()
 
 	file, err := os.Open(filePath)
@@ -44,7 +44,7 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 			date = nextColumn(line, &idx, ";")
 		}
 
-		if !strings.HasPrefix(date, "2021") {
+		if !strings.HasPrefix(date, year) {
 			currentPos += int64(len(line))
 			continue
 		}
