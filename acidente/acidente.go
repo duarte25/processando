@@ -2,7 +2,6 @@ package acidente
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -13,7 +12,7 @@ const (
 	numParts = 8 // Número de partes para dividir o arquivo
 )
 
-func Acidente(filePath, indexToColumn, dateColumn, year string) {
+func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]UFData {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -71,7 +70,8 @@ func Acidente(filePath, indexToColumn, dateColumn, year string) {
 	})
 
 	// Exibir o mapa de dados copiados
-	fmt.Println(result)
+	return result
+	// fmt.Println(result)
 }
 
 func findColumnIndex(file *os.File, columnName string) int {
