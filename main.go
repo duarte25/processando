@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"processando/src/configs"
-	"processando/src/handlers"
+	"processando/src/routes"
 
 	"github.com/go-chi/chi"
 )
@@ -16,7 +16,6 @@ func main() {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
 	}
 
-	r := chi.NewRouter()
 	// ctx := context.Background()
 
 	// Obter o cliente Redis do pacote configs
@@ -41,7 +40,8 @@ func main() {
 	// }
 
 	// Definindo rotas
-	r.Get("/", handlers.List)
+	r := chi.NewRouter()
+	routes.RegisterRoutes(r)
 
 	// Configurando servidor HTTP
 	err = http.ListenAndServe(":8080", r)
