@@ -11,9 +11,9 @@ import (
 
 // Mapa para armazenar as contagens e somas por UF
 type UFData struct {
-	count         int
-	totalDeath    int
-	totalInvolved int
+	Count         int `json:"count"`
+	TotalDeath    int `json:"total_death"`
+	TotalInvolved int `json:"total_involved"`
 }
 
 func processFilePart(filePath, year string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
@@ -90,9 +90,9 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		if _, exists := localCounts[uf]; !exists {
 			localCounts[uf] = &UFData{}
 		}
-		localCounts[uf].count++
-		localCounts[uf].totalDeath += amountDeath
-		localCounts[uf].totalInvolved += amountInvolved
+		localCounts[uf].Count++
+		localCounts[uf].TotalDeath += amountDeath
+		localCounts[uf].TotalInvolved += amountInvolved
 
 		currentPos += int64(len(line))
 	}
@@ -106,9 +106,9 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		actual, _ := counts.LoadOrStore(unit, data)
 		if actual != data {
 			storedData := actual.(*UFData)
-			storedData.count += data.count
-			storedData.totalDeath += data.totalDeath
-			storedData.totalInvolved += data.totalInvolved
+			storedData.Count += data.Count
+			storedData.TotalDeath += data.TotalDeath
+			storedData.TotalInvolved += data.TotalInvolved
 			counts.Store(unit, storedData)
 		}
 	}
