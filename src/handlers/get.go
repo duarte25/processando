@@ -19,7 +19,6 @@ func List(w http.ResponseWriter, r *http.Request) {
 
 	// Obter o cliente Redis do pacote configs
 	rdb := configs.GetRedisClient()
-	defer rdb.Close()
 
 	// Tentando buscar os dados no Redis como um hash
 	data, err := rdb.HGetAll(ctx, redisKey).Result()

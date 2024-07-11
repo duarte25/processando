@@ -28,14 +28,6 @@ type RedisConfig struct {
 	DB       int
 }
 
-// Função init para definir as configurações padrão
-func init() {
-	viper.SetDefault("api.port", "9000")
-	viper.SetDefault("redis.addr", "localhost:6379")
-	viper.SetDefault("redis.password", "")
-	viper.SetDefault("redis.db", 0)
-}
-
 // Load carrega as configurações do arquivo e inicializa o cliente Redis
 func Load() error {
 	viper.SetConfigName("config")

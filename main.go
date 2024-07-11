@@ -43,8 +43,11 @@ func main() {
 	r := chi.NewRouter()
 	routes.RegisterRoutes(r)
 
+	// Capturando a porta do arquivo de configuração
+	port := configs.GetServerPort()
+
 	// Configurando servidor HTTP
-	err = http.ListenAndServe(":8080", r)
+	err = http.ListenAndServe(":"+port, r)
 	if err != nil {
 		log.Fatalf("Erro ao iniciar o servidor: %v", err)
 	}
