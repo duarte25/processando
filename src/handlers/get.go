@@ -15,7 +15,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	// Definindo a chave para buscar os dados no Redis
-	redisKey := "dados_acidentes"
+	redisKey := "dados_acidentes_2021"
 
 	// Obter o cliente Redis do pacote configs
 	rdb := configs.GetRedisClient()
