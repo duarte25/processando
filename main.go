@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	service.CreateData()
+	service.Controller()
 	// Carregar as configurações
 	err := configs.Load()
 	if err != nil {

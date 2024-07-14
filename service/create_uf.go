@@ -7,51 +7,19 @@ import (
 	"log"
 	"processando/acidente"
 	"processando/src/configs"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type YearData struct {
 	UFData map[string]acidente.UFData `json:"uf_data"`
 }
 
-func CreateData() {
+func createDataUF(rdb *redis.Client, ctx context.Context) {
 	// Carregar as configurações
 	err := configs.Load()
 	if err != nil {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
-	}
-
-	ctx := context.Background()
-
-	// Obter o cliente Redis do pacote configs
-	rdb := configs.GetRedisClient()
-	defer rdb.Close()
-
-	key := "dados_acidentes_2021"
-
-	// Verificar se a chave existe
-	exists, err := rdb.Exists(ctx, key).Result()
-	if err != nil {
-		log.Fatalf("Erro ao verificar existência da chave: %v", err)
-	}
-
-	if exists == 1 {
-		// Chave existe, verificar integridade dos dados (exemplo com hash)
-		data, err := rdb.HGetAll(ctx, key).Result()
-		if err != nil {
-			log.Fatalf("Erro ao obter dados da chave: %v", err)
-		}
-		fmt.Println(data)
-		// Verificar se há dados válidos
-		if len(data) > 0 {
-			// Os dados estão presentes e podem ser processados
-			fmt.Println("Dados válidos encontrados para", key)
-		} else {
-			// A chave existe, mas não há dados válidos associados
-			fmt.Println("Chave existe, mas não há dados válidos para", key)
-		}
-	} else {
-		// Chave não existe, nenhum dado foi armazenado ou todos foram removidos
-		fmt.Println("Chave não encontrada no Redis:", key)
 	}
 
 	// Chama a função para processar os acidentes
@@ -82,4 +50,6 @@ func CreateData() {
 			}
 		}
 	}
+
+	fmt.Println("Dados inseridos em redis!")
 }
