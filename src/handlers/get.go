@@ -22,6 +22,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 
 	// Tentando buscar os dados no Redis como um hash
 	data, err := rdb.HGetAll(ctx, redisKey).Result()
+
 	if err == redis.Nil {
 		// Se os dados não estiverem no Redis, retorne um erro ou uma mensagem apropriada
 		http.Error(w, "Nenhum registro encontrado no cache", http.StatusNotFound)

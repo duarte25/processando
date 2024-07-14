@@ -13,13 +13,12 @@ import (
 
 func main() {
 
+	service.CreateData()
 	// Carregar as configurações
 	err := configs.Load()
 	if err != nil {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
 	}
-
-	service.CreateData()
 
 	// Definindo rotas
 	r := chi.NewRouter()
