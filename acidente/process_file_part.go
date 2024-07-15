@@ -16,6 +16,11 @@ type UFData struct {
 	TotalInvolved int `json:"total_involved"`
 }
 
+// Define a struct Year, que inclui UFData
+type YearData struct {
+	UFs map[string]*UFData
+}
+
 func processFilePart(filePath, year string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
 	defer wg.Done()
 
@@ -37,6 +42,8 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 			return
 		}
 	}
+
+	groupYear := make(map[string]*YearData)
 
 	localCounts := make(map[string]*UFData)
 	currentPos := startOffset
@@ -64,8 +71,6 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		}
 
 		// Ler e somar `amountDeath`
-		// Inclui dessa forma pois é a ultima coluna e então para não acontecer erros na hora de calcular
-		// Erro na quebra de linha inclui esse trimspace mas somente nele acredito que os outros não quebrarão
 		idx = 0
 		var amountDeathStr string
 		for i := 0; i <= amountDeathColumn; i++ {
@@ -86,7 +91,7 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		}
 		amountInvolved, _ := strconv.Atoi(amountInvolvedStr)
 
-		// Atualizar os dados no mapa
+		// Atualizar os dados no mapa localCounts
 		if _, exists := localCounts[uf]; !exists {
 			localCounts[uf] = &UFData{}
 		}
@@ -94,14 +99,20 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		localCounts[uf].TotalDeath += amountDeath
 		localCounts[uf].TotalInvolved += amountInvolved
 
+		// Verifica se o ano já existe no mapa groupYear
+		if _, exists := groupYear[year]; !exists {
+			groupYear[year] = &YearData{
+				UFs: make(map[string]*UFData),
+			}
+		}
+
+		// Atualiza os dados no mapa groupYear
+		groupYear[year].UFs[uf] = localCounts[uf]
+
 		currentPos += int64(len(line))
 	}
 
-	/*
-		percorrendo um mapa (localCounts) que contém contagens de acidentes por unidade
-		e acumulando essas contagens em uma estrutura de dados chamada
-		counts, que é um sync.Map. Vamos detalhar cada linha do código
-	*/
+	// Percorrendo localCounts e acumulando em counts
 	for unit, data := range localCounts {
 		actual, _ := counts.LoadOrStore(unit, data)
 		if actual != data {
@@ -110,6 +121,15 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 			storedData.TotalDeath += data.TotalDeath
 			storedData.TotalInvolved += data.TotalInvolved
 			counts.Store(unit, storedData)
+		}
+	}
+
+	// Exibe o conteúdo do groupYear (opcional)
+	for year, yearData := range groupYear {
+		fmt.Printf("Year: %s\n", year)
+		for uf, data := range yearData.UFs {
+			fmt.Printf("UF: %s, Count: %d, TotalDeath: %d, TotalInvolved: %d\n",
+				uf, data.Count, data.TotalDeath, data.TotalInvolved)
 		}
 	}
 }
