@@ -7,6 +7,8 @@ import (
 	"log"
 	"processando/acidente"
 	"processando/src/configs"
+	"sync"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -23,15 +25,52 @@ func createDataUF(rdb *redis.Client, ctx context.Context) {
 	}
 
 	// Chama a função para processar os acidentes
-	result2021 := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2021")
-	result2022 := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2022")
+	var wg sync.WaitGroup
+	start := time.Now()
+	wg.Add(5)
+
+	results := make(chan interface{}, 5)
+
+	processYear := func(year string) {
+		defer wg.Done()
+		result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", year)
+		results <- result
+	}
+
+	go processYear("2018")
+	go processYear("2019")
+	go processYear("2020")
+	go processYear("2021")
+	go processYear("2022")
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	// result2018 := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2018")
+	// result2019 := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2019")
+	// result2020 := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2020")
+	// result2021 := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2021")
+	// result2022 := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", "2022")
+
+	// Ler os resultados do canal
+	for result := range results {
+		fmt.Println(result) // Aqui você pode processar os resultados conforme necessário
+	}
+
+	elapsed := time.Since(start)
+	fmt.Println(elapsed, "/")
 
 	// Criar um mapa para armazenar os dados por ano
 	result := make(map[string]YearData)
 
-	// Adicionar os resultados de 2021 e 2022 ao mapa result
-	result["2021"] = YearData{UFData: result2021}
-	result["2022"] = YearData{UFData: result2022}
+	// Adicionando os result ao map
+	// result["2018"] = YearData{UFData: result2018}
+	// result["2019"] = YearData{UFData: result2019}
+	// result["2020"] = YearData{UFData: result2020}
+	// result["2021"] = YearData{UFData: result2021}
+	// result["2022"] = YearData{UFData: result2022}
 
 	// Itera sobre os dados e insere no Redis
 	for year, yearData := range result {
