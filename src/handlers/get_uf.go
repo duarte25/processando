@@ -10,15 +10,13 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func List(w http.ResponseWriter, r *http.Request) {
+func ListUF(w http.ResponseWriter, r *http.Request) {
 
 	// Obter o parâmetro da URL "dados"
 	redisKey := r.URL.Query().Get("dados")
 
 	// Definindo um contexto para o Redis
 	ctx := context.Background()
-	// Definindo a chave para buscar os dados no Redis
-	// redisKey := "dados_acidentes_2021"
 
 	// Obter o cliente Redis do pacote configs
 	rdb := configs.GetRedisClient()
