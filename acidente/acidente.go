@@ -12,7 +12,7 @@ const (
 	numParts = 8 // Número de partes para dividir o arquivo
 )
 
-func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]UFData {
+func Acidente(filePath, indexToColumn, dateColumn string) map[string]YearData {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -43,6 +43,7 @@ func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]UFDat
 
 	var wg sync.WaitGroup
 	var counts sync.Map
+	var mu sync.Mutex
 
 	// Processar cada parte do arquivo em paralelo
 	for i := 0; i < numParts; i++ {
@@ -53,25 +54,23 @@ func Acidente(filePath, indexToColumn, dateColumn, year string) map[string]UFDat
 		}
 
 		wg.Add(1)
-		go processFilePart(filePath, year, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, &wg, &counts)
+		go processFilePart(filePath, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, &wg, &counts, &mu)
 	}
 
 	// Aguardar todas as goroutines
 	wg.Wait()
 
-	// Copiar os dados do sync.Map para um novo map[string]UFData
-	// Copiar os dados do sync.Map para o map[string]UFData
-	result := make(map[string]UFData)
+	// Copiar os dados do sync.Map para um novo map[string]YearData
+	result := make(map[string]YearData)
 	counts.Range(func(key, value interface{}) bool {
-		uf := key.(string)
-		data := value.(*UFData)
-		result[uf] = *data
+		year := key.(string)
+		yearData := value.(*YearData)
+		result[year] = *yearData
 		return true
 	})
 
 	// Exibir o mapa de dados copiados
 	return result
-	// fmt.Println(result)
 }
 
 func findColumnIndex(file *os.File, columnName string) int {
@@ -90,13 +89,3 @@ func findColumnIndex(file *os.File, columnName string) int {
 	}
 	return -1 // Coluna não encontrada
 }
-
-/*
-num_acidente;chv_localidade;data_acidente;uf_acidente;ano_acidente;mes_acidente;mes_ano_acidente;codigo_ibge;
-dia_semana;fase_dia;tp_acidente;cond_meteorologica;end_acidente;num_end_acidente;cep_acidente;bairro_acidente;
-km_via_acidente;latitude_acidente;longitude_acidente;hora_acidente;tp_rodovia;cond_pista;tp_cruzamento;
-tp_pavimento;tp_curva;lim_velocidade;tp_pista;ind_guardrail;ind_cantcentral;ind_acostamento;qtde_acidente;
-qtde_acid_com_obitos;qtde_envolvidos;qtde_feridosilesos;qtde_obitos
-*/
-
-// uf_acidente, ano_acidente,

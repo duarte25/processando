@@ -21,7 +21,7 @@ type YearData struct {
 	UFs map[string]*UFData
 }
 
-func processFilePart(filePath, year string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
+func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map, mu *sync.Mutex) {
 	defer wg.Done()
 
 	file, err := os.Open(filePath)
@@ -43,13 +43,14 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		}
 	}
 
-	groupYear := make(map[string]*YearData)
-
-	localCounts := make(map[string]*UFData)
 	currentPos := startOffset
 	for currentPos < endOffset {
 		line, err := reader.ReadString('\n')
 		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
+			fmt.Println("Erro ao ler a linha:", err)
 			break
 		}
 
@@ -59,7 +60,7 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 			date = nextColumn(line, &idx, ";")
 		}
 
-		if !strings.HasPrefix(date, year) {
+		if !strings.HasPrefix(date, "20") {
 			currentPos += int64(len(line))
 			continue
 		}
@@ -91,45 +92,27 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		}
 		amountInvolved, _ := strconv.Atoi(amountInvolvedStr)
 
-		// Atualizar os dados no mapa localCounts
-		if _, exists := localCounts[uf]; !exists {
-			localCounts[uf] = &UFData{}
-		}
-		localCounts[uf].Count++
-		localCounts[uf].TotalDeath += amountDeath
-		localCounts[uf].TotalInvolved += amountInvolved
+		year := date[:4] // Assume que o ano está nos primeiros 4 caracteres da data
 
-		// Verifica se o ano já existe no mapa groupYear
-		if _, exists := groupYear[year]; !exists {
-			groupYear[year] = &YearData{
-				UFs: make(map[string]*UFData),
-			}
-		}
+		// Usar mutex para sincronizar o acesso ao mapa counts
+		mu.Lock()
 
-		// Atualiza os dados no mapa groupYear
-		groupYear[year].UFs[uf] = localCounts[uf]
+		// Carregar ou inicializar o YearData para o ano atual
+		yearDataInterface, _ := counts.LoadOrStore(year, &YearData{
+			UFs: make(map[string]*UFData),
+		})
+		yearData := yearDataInterface.(*YearData)
+
+		// Atualizar os dados no mapa yearData
+		if _, exists := yearData.UFs[uf]; !exists {
+			yearData.UFs[uf] = &UFData{}
+		}
+		yearData.UFs[uf].Count++
+		yearData.UFs[uf].TotalDeath += amountDeath
+		yearData.UFs[uf].TotalInvolved += amountInvolved
+
+		mu.Unlock()
 
 		currentPos += int64(len(line))
-	}
-
-	// Percorrendo localCounts e acumulando em counts
-	for unit, data := range localCounts {
-		actual, _ := counts.LoadOrStore(unit, data)
-		if actual != data {
-			storedData := actual.(*UFData)
-			storedData.Count += data.Count
-			storedData.TotalDeath += data.TotalDeath
-			storedData.TotalInvolved += data.TotalInvolved
-			counts.Store(unit, storedData)
-		}
-	}
-
-	// Exibe o conteúdo do groupYear (opcional)
-	for year, yearData := range groupYear {
-		fmt.Printf("Year: %s\n", year)
-		for uf, data := range yearData.UFs {
-			fmt.Printf("UF: %s, Count: %d, TotalDeath: %d, TotalInvolved: %d\n",
-				uf, data.Count, data.TotalDeath, data.TotalInvolved)
-		}
 	}
 }
