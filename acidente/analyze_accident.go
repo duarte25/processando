@@ -1,4 +1,4 @@
-package acidente
+package accident
 
 import (
 	"bufio"
@@ -12,7 +12,7 @@ const (
 	numParts = 8 // Número de partes para dividir o arquivo
 )
 
-func Acidente(filePath, indexToColumn, dateColumn string) map[string]*YearData {
+func AnalyzeAccidentData(filePath, indexToColumn, dateColumn string) map[string]*YearData {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {

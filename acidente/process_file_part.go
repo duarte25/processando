@@ -1,4 +1,4 @@
-package acidente
+package accident
 
 import (
 	"bufio"
@@ -93,10 +93,11 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 		}
 		amountInvolved, _ := strconv.Atoi(amountInvolvedStr)
 
-		year := date[:4] // Assume que o ano está nos primeiros 4 caracteres da data
+		// fmt.Println(date)
+		// year := date[:4] // Assume que o ano está nos primeiros 4 caracteres da data
 
 		// Carregar ou inicializar o YearData para o ano atual
-		yearDataInterface, _ := counts.LoadOrStore(year, &YearData{
+		yearDataInterface, _ := counts.LoadOrStore(date, &YearData{
 			UFs: make(map[string]*UFData),
 		})
 		yearData := yearDataInterface.(*YearData)

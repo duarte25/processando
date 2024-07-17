@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"processando/acidente"
+	accident "processando/acidente"
 	"processando/src/configs"
-	"sync"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -24,12 +23,8 @@ func createDataUF(rdb *redis.Client, ctx context.Context) {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
 	}
 
-	// Chama a função para processar os acidentes
-	var wg sync.WaitGroup
 	start := time.Now()
-	wg.Add(5)
-
-	result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
+	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
 
 	elapsed := time.Since(start)
 	fmt.Println(elapsed, "/")
