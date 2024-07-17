@@ -10,8 +10,8 @@ import (
 )
 
 // Mapa para armazenar as contagens e somas por UF
-type UFData struct {
-	Count         int `json:"count"`
+type AccidentData struct {
+	TotalAccident int `json:"total_accident"`
 	TotalDeath    int `json:"total_death"`
 	TotalInvolved int `json:"total_involved"`
 }
@@ -19,7 +19,7 @@ type UFData struct {
 // Define a struct Year, que inclui UFData
 type YearData struct {
 	mu  sync.Mutex
-	UFs map[string]*UFData
+	UFs map[string]*AccidentData
 }
 
 func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
@@ -98,16 +98,16 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 
 		// Carregar ou inicializar o YearData para o ano atual
 		yearDataInterface, _ := counts.LoadOrStore(date, &YearData{
-			UFs: make(map[string]*UFData),
+			UFs: make(map[string]*AccidentData),
 		})
 		yearData := yearDataInterface.(*YearData)
 
 		// Usar mutex para sincronizar o acesso ao mapa yearData
 		yearData.mu.Lock()
 		if _, exists := yearData.UFs[uf]; !exists {
-			yearData.UFs[uf] = &UFData{}
+			yearData.UFs[uf] = &AccidentData{}
 		}
-		yearData.UFs[uf].Count++
+		yearData.UFs[uf].TotalAccident++
 		yearData.UFs[uf].TotalDeath += amountDeath
 		yearData.UFs[uf].TotalInvolved += amountInvolved
 		yearData.mu.Unlock()

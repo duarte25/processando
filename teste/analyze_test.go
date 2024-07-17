@@ -18,34 +18,34 @@ func TestAnalyzeAccidentData(t *testing.T) {
 	results := accident.AnalyzeAccidentData("../Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
 
 	// Verifica os resultados esperados para o ano de 2022
-	expectedData2022 := map[string]*accident.UFData{
+	expectedData2022 := map[string]*accident.AccidentData{
 		"AC": {
-			Count:         3775,
+			TotalAccident: 3775,
 			TotalDeath:    47,
 			TotalInvolved: 7725,
 		},
 		"AL": {
-			Count:         2568,
+			TotalAccident: 2568,
 			TotalDeath:    642,
 			TotalInvolved: 5181,
 		},
 		"AM": {
-			Count:         1,
+			TotalAccident: 1,
 			TotalDeath:    1,
 			TotalInvolved: 1,
 		},
 		"MG": {
-			Count:         256298,
+			TotalAccident: 256298,
 			TotalDeath:    1993,
 			TotalInvolved: 483857,
 		},
 		"SP": {
-			Count:         121838,
+			TotalAccident: 121838,
 			TotalDeath:    3475,
 			TotalInvolved: 67653,
 		},
 		"RJ": {
-			Count:         15299,
+			TotalAccident: 15299,
 			TotalDeath:    1361,
 			TotalInvolved: 15262,
 		},
@@ -62,8 +62,8 @@ func TestAnalyzeAccidentData(t *testing.T) {
 		if !ok {
 			t.Fatalf("Resultados para o estado %s não encontrados no ano de 2022", uf)
 		}
-		if resultUFData.Count != expectedUFData.Count {
-			t.Errorf("Ano 2022, UF %s: esperava %d acidentes, obteve %d", uf, expectedUFData.Count, resultUFData.Count)
+		if resultUFData.TotalAccident != expectedUFData.TotalAccident {
+			t.Errorf("Ano 2022, UF %s: esperava %d acidentes, obteve %d", uf, expectedUFData.TotalAccident, resultUFData.TotalAccident)
 		}
 		if resultUFData.TotalDeath != expectedUFData.TotalDeath {
 			t.Errorf("Ano 2022, UF %s: esperava %d óbitos, obteve %d", uf, expectedUFData.TotalDeath, resultUFData.TotalDeath)

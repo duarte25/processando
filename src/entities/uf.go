@@ -1,7 +1,7 @@
 package entities
 
 type UF struct {
-	Count          int `json:"count"`
-	Total_Death    int `json:"total_death"`
-	Total_Involved int `json:"total_involved"`
+	TotalAccident int `json:"total_accident"`
+	TotalDeath    int `json:"total_death"`
+	TotalInvolved int `json:"total_involved"`
 }
