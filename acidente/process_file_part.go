@@ -18,10 +18,11 @@ type UFData struct {
 
 // Define a struct Year, que inclui UFData
 type YearData struct {
+	mu  sync.Mutex
 	UFs map[string]*UFData
 }
 
-func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map, mu *sync.Mutex) {
+func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
 	defer wg.Done()
 
 	file, err := os.Open(filePath)
@@ -94,24 +95,21 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 
 		year := date[:4] // Assume que o ano está nos primeiros 4 caracteres da data
 
-		// Usar mutex para sincronizar o acesso ao mapa counts
-		mu.Lock()
-
 		// Carregar ou inicializar o YearData para o ano atual
 		yearDataInterface, _ := counts.LoadOrStore(year, &YearData{
 			UFs: make(map[string]*UFData),
 		})
 		yearData := yearDataInterface.(*YearData)
 
-		// Atualizar os dados no mapa yearData
+		// Usar mutex para sincronizar o acesso ao mapa yearData
+		yearData.mu.Lock()
 		if _, exists := yearData.UFs[uf]; !exists {
 			yearData.UFs[uf] = &UFData{}
 		}
 		yearData.UFs[uf].Count++
 		yearData.UFs[uf].TotalDeath += amountDeath
 		yearData.UFs[uf].TotalInvolved += amountInvolved
-
-		mu.Unlock()
+		yearData.mu.Unlock()
 
 		currentPos += int64(len(line))
 	}

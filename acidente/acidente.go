@@ -12,7 +12,7 @@ const (
 	numParts = 8 // Número de partes para dividir o arquivo
 )
 
-func Acidente(filePath, indexToColumn, dateColumn string) map[string]YearData {
+func Acidente(filePath, indexToColumn, dateColumn string) map[string]*YearData {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -43,7 +43,6 @@ func Acidente(filePath, indexToColumn, dateColumn string) map[string]YearData {
 
 	var wg sync.WaitGroup
 	var counts sync.Map
-	var mu sync.Mutex
 
 	// Processar cada parte do arquivo em paralelo
 	for i := 0; i < numParts; i++ {
@@ -54,18 +53,18 @@ func Acidente(filePath, indexToColumn, dateColumn string) map[string]YearData {
 		}
 
 		wg.Add(1)
-		go processFilePart(filePath, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, &wg, &counts, &mu)
+		go processFilePart(filePath, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, &wg, &counts)
 	}
 
 	// Aguardar todas as goroutines
 	wg.Wait()
 
-	// Copiar os dados do sync.Map para um novo map[string]YearData
-	result := make(map[string]YearData)
+	// Copiar os dados do sync.Map para um novo map[string]*YearData
+	result := make(map[string]*YearData)
 	counts.Range(func(key, value interface{}) bool {
 		year := key.(string)
 		yearData := value.(*YearData)
-		result[year] = *yearData
+		result[year] = yearData
 		return true
 	})
 
