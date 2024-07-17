@@ -2,6 +2,7 @@ package accident
 
 import (
 	"log"
+	accident "processando/acidente"
 	"processando/src/configs"
 	"testing"
 )
@@ -14,10 +15,10 @@ func TestAnalyzeAccidentData(t *testing.T) {
 	}
 
 	// Executa a função que queremos testar
-	results := AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
+	results := accident.AnalyzeAccidentData("../Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
 
 	// Verifica os resultados esperados para o ano de 2022
-	expectedData2022 := map[string]*UFData{
+	expectedData2022 := map[string]*accident.UFData{
 		"AC": {
 			Count:         3775,
 			TotalDeath:    47,
@@ -56,6 +57,7 @@ func TestAnalyzeAccidentData(t *testing.T) {
 	}
 
 	for uf, expectedUFData := range expectedData2022 {
+
 		resultUFData, ok := resultData2022.UFs[uf]
 		if !ok {
 			t.Fatalf("Resultados para o estado %s não encontrados no ano de 2022", uf)

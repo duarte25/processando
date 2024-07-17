@@ -12,10 +12,6 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-// type YearData struct {
-// 	UFData map[string]acidente.UFData `json:"uf_data"`
-// }
-
 func createDataUF(rdb *redis.Client, ctx context.Context) {
 	// Carregar as configurações
 	err := configs.Load()
@@ -31,7 +27,7 @@ func createDataUF(rdb *redis.Client, ctx context.Context) {
 
 	// Itera sobre os dados e insere no Redis
 	for year, yearData := range result {
-		redisKey := fmt.Sprintf("dados_acidentes_%s", year)
+		redisKey := fmt.Sprintf("dados_uf_%s", year)
 
 		// Iterar sobre os dados de cada estado e inseri-los como hash
 		for state, ufData := range yearData.UFs {

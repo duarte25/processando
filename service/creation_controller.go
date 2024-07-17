@@ -22,13 +22,13 @@ func Controller() {
 	rdb := configs.GetRedisClient()
 	defer rdb.Close()
 
-	// if !validation(rdb, ctx) {
-	createDataUF(rdb, ctx)
-	// }
+	if !validation(rdb, ctx) {
+		createDataUF(rdb, ctx)
+	}
 }
 
 func validation(rdb *redis.Client, ctx context.Context) bool {
-	key := "dados_acidentes_2021"
+	key := "dados_uf_2021"
 
 	// Verificar se a chave existe
 	exists, err := rdb.Exists(ctx, key).Result()
