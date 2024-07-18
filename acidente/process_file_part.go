@@ -9,17 +9,17 @@ import (
 	"sync"
 )
 
-// Mapa para armazenar as contagens e somas por UF
+// Mapa para armazenar as contagens e somas
 type AccidentData struct {
 	TotalAccident int `json:"total_accident"`
 	TotalDeath    int `json:"total_death"`
 	TotalInvolved int `json:"total_involved"`
 }
 
-// Define a struct Year, que inclui UFData
+// Define a struct Year, que inclui a informação da coluna desejada
 type YearData struct {
-	mu  sync.Mutex
-	UFs map[string]*AccidentData
+	mu           sync.Mutex
+	TotalAcciden map[string]*AccidentData
 }
 
 func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
@@ -67,9 +67,9 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 		}
 
 		idx = 0
-		var uf string
+		var columnName string
 		for i := 0; i <= idxColumn; i++ {
-			uf = nextColumn(line, &idx, ";")
+			columnName = nextColumn(line, &idx, ";")
 		}
 
 		// Ler e somar `amountDeath`
@@ -98,18 +98,18 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 
 		// Carregar ou inicializar o YearData para o ano atual
 		yearDataInterface, _ := counts.LoadOrStore(date, &YearData{
-			UFs: make(map[string]*AccidentData),
+			TotalAcciden: make(map[string]*AccidentData),
 		})
 		yearData := yearDataInterface.(*YearData)
 
 		// Usar mutex para sincronizar o acesso ao mapa yearData
 		yearData.mu.Lock()
-		if _, exists := yearData.UFs[uf]; !exists {
-			yearData.UFs[uf] = &AccidentData{}
+		if _, exists := yearData.TotalAcciden[columnName]; !exists {
+			yearData.TotalAcciden[columnName] = &AccidentData{}
 		}
-		yearData.UFs[uf].TotalAccident++
-		yearData.UFs[uf].TotalDeath += amountDeath
-		yearData.UFs[uf].TotalInvolved += amountInvolved
+		yearData.TotalAcciden[columnName].TotalAccident++
+		yearData.TotalAcciden[columnName].TotalDeath += amountDeath
+		yearData.TotalAcciden[columnName].TotalInvolved += amountInvolved
 		yearData.mu.Unlock()
 
 		currentPos += int64(len(line))

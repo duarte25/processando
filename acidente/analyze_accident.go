@@ -28,7 +28,7 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn string) map[string]
 	amountInvolvedColumn := findColumnIndex(file, "qtde_envolvidos")
 
 	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 {
-		log.Fatal("Coluna uf_acidente ou data_acidente não encontrada no cabeçalho")
+		log.Fatal("Coluna definida ou data_acidente não encontrada no cabeçalho")
 	}
 
 	// Dividir o arquivo em várias partes

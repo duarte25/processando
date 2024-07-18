@@ -10,8 +10,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func ListUF(w http.ResponseWriter, r *http.Request) {
-
+func ListClimate(w http.ResponseWriter, r *http.Request) {
 	// Obter o parâmetro da URL "dados"
 	redisKey := r.URL.Query().Get("dados")
 
@@ -33,22 +32,21 @@ func ListUF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stateDatas := make(map[string]entities.UF)
+	climateDatas := make(map[string]entities.Climate)
 
-	for state, jsonData := range data {
-		var datas entities.UF
+	for climate, jsonData := range data {
+		var datas entities.Climate
 		err := json.Unmarshal([]byte(jsonData), &datas)
 
 		if err != nil {
-			http.Error(w, "Erro ao desserializar dados do uf "+state, http.StatusInternalServerError)
+			http.Error(w, "Error ao desserializar dados do climate "+climate, http.StatusInternalServerError)
 			return
 		}
 
-		stateDatas[state] = datas
+		climateDatas[climate] = datas
 	}
 
-	// Se os dados estiverem no Redis, converta para JSON e retorne-os
-	jsonData, err := json.Marshal(stateDatas)
+	jsonData, err := json.Marshal(climateDatas)
 	if err != nil {
 		http.Error(w, "Erro ao converter dados para JSON", http.StatusInternalServerError)
 		return

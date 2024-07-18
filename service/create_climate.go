@@ -7,30 +7,24 @@ import (
 	"log"
 	accident "processando/acidente"
 	"processando/src/configs"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 )
 
-func createDataUF(rdb *redis.Client, ctx context.Context) {
+func createDataClimate(rdb *redis.Client, ctx context.Context) {
 	// Carregar as configurações
 	err := configs.Load()
 	if err != nil {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
 	}
 
-	start := time.Now()
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
-
-	elapsed := time.Since(start)
-	fmt.Println(elapsed, "/")
+	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "cond_meteorologica", "ano_acidente")
 
 	// Itera sobre os dados e insere no Redis
-	// SE PÀ CONSIGO MUDAR ISSO PARA ACONTECER EM OUTRO ARQUIVO AI ACONTECERA TUDO DE UMA VEZ COM TODOS OS DADOS
 	for year, yearData := range result {
-		redisKey := fmt.Sprintf("dados_uf_%s", year)
+		redisKey := fmt.Sprintf("dados_climate_%s", year)
 
-		// Iterar sobre os dados de cada estado e inseri-los como hash
+		// Iterar sobre os dados de cada climate e inseri-los como hash
 		for state, ufData := range yearData.TotalAcciden {
 			data, err := json.Marshal(ufData)
 			if err != nil {
@@ -44,5 +38,4 @@ func createDataUF(rdb *redis.Client, ctx context.Context) {
 		}
 	}
 
-	fmt.Println("Dados inseridos em redis!")
 }

@@ -58,7 +58,7 @@ func TestAnalyzeAccidentData(t *testing.T) {
 
 	for uf, expectedUFData := range expectedData2022 {
 
-		resultUFData, ok := resultData2022.UFs[uf]
+		resultUFData, ok := resultData2022.TotalAcciden[uf]
 		if !ok {
 			t.Fatalf("Resultados para o estado %s não encontrados no ano de 2022", uf)
 		}

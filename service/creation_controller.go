@@ -24,6 +24,7 @@ func Controller() {
 
 	if !validation(rdb, ctx) {
 		createDataUF(rdb, ctx)
+		createDataClimate(rdb, ctx)
 	}
 }
 
