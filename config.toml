@@ -1,5 +1,5 @@
 [api]
-port = "8080"
+port = "8090"
 
 [redis]
 addr = "localhost:6379"

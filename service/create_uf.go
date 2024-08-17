@@ -33,7 +33,7 @@ func createDataUF(rdb *redis.Client, ctx context.Context) {
 
 	processYear := func(year string) {
 		defer wg.Done()
-		result := acidente.Acidente("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", year)
+		result := acidente.Acidente("../acidentes_202304/Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "data_acidente", year)
 		results <- result
 	}
 
