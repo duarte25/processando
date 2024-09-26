@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	accident "processando/acidente"
 	"processando/src/configs"
 
 	"github.com/go-redis/redis/v8"
@@ -21,6 +22,8 @@ func Controller() {
 	// Obter o cliente Redis do pacote configs
 	rdb := configs.GetRedisClient()
 	defer rdb.Close()
+
+	accident.SearchAccident("./Acidentes_DadosAbertos_20230412.csv", "76980-233")
 
 	if !validation(rdb, ctx) {
 		createDataUF(rdb, ctx)
