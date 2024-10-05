@@ -6,17 +6,11 @@ import (
 	"fmt"
 	"log"
 	accident "processando/acidente"
-	"processando/src/configs"
 
 	"github.com/go-redis/redis/v8"
 )
 
 func createDataClimate(rdb *redis.Client, ctx context.Context) {
-	// Carregar as configurações
-	err := configs.Load()
-	if err != nil {
-		log.Fatalf("Erro ao carregar configurações: %v", err)
-	}
 
 	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "cond_meteorologica", "ano_acidente")
 
@@ -37,7 +31,7 @@ func createDataClimate(rdb *redis.Client, ctx context.Context) {
 
 	// Itera sobre os dados e insere no Redis
 	for year, yearData := range result {
-		redisKey := fmt.Sprintf("dados_climate_%s", year)
+		redisKey := fmt.Sprintf("data_climate_%s", year)
 
 		for climate, count := range yearData.TotalAcciden {
 			newClimateName, exists := nameMapping[climate]
