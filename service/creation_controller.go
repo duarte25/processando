@@ -16,7 +16,6 @@ func Controller() {
 
 	// Obter o cliente Redis do pacote configs
 	rdb := configs.GetRedisClient()
-	defer rdb.Close()
 
 	start := time.Now()
 

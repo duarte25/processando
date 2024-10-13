@@ -12,7 +12,7 @@ import (
 
 func ListClimate(w http.ResponseWriter, r *http.Request) {
 	// Obter o parâmetro da URL "dados"
-	redisKey := r.URL.Query().Get("dados")
+	redisKey := r.URL.Query().Get("data")
 
 	// Definindo um contexto para o Redis
 	ctx := context.Background()

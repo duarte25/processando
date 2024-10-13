@@ -4,10 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os" // Pacote para ler variáveis de ambiente
+	"os/signal"
 	"processando/service"
 	"processando/src/configs"
 	"processando/src/middleware"
 	"processando/src/routes"
+	"syscall"
 
 	"github.com/go-chi/chi"
 )
@@ -36,11 +38,31 @@ func main() {
 		port = "8080" // Definir porta padrão se a variável de ambiente não estiver definida
 	}
 
-	// Configurar e iniciar o servidor HTTP
-	log.Printf("Iniciando servidor na porta %s", port)
+	// Configurar um canal para capturar sinais do sistema
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	err = http.ListenAndServe(":"+port, r)
-	if err != nil {
-		log.Fatalf("Erro ao iniciar o servidor: %v", err)
+	// Iniciar o servidor HTTP em uma goroutine
+	go func() {
+		log.Printf("Iniciando servidor na porta %s", port)
+		if err := http.ListenAndServe(":"+port, r); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Erro ao iniciar o servidor: %v", err)
+		}
+	}()
+
+	// Obter o cliente Redis do pacote configs
+	rdb := configs.GetRedisClient()
+
+	// Aguardar por um sinal de encerramento
+	<-c
+	log.Println("Desligando o servidor e fechando a conexão com o Redis...")
+
+	// Fechar a conexão com o Redis antes de encerrar
+	if err := rdb.Close(); err != nil {
+		log.Printf("Erro ao fechar a conexão com o Redis: %v", err)
+	} else {
+		log.Println("Conexão com o Redis fechada com sucesso.")
 	}
+
+	log.Println("Servidor encerrado.")
 }
