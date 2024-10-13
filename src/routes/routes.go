@@ -10,5 +10,9 @@ func RegisterRoutes(router *chi.Mux) {
 	router.Get("/uf", handlers.ListUF) // Chama Get diretamente
 	router.Get("/climate", handlers.ListClimate)
 	router.Get("/guardrail", handlers.ListGuardrail)
+	router.Get("/highway", handlers.ListHighway)
+	router.Get("/median", handlers.ListMedian)
+	router.Get("/shoulder", handlers.ListShoulder)
+	router.Get("/speed", handlers.ListSpeed)
 	// Adicione outras rotas aqui, usando handlers do pacote "handlers"
 }

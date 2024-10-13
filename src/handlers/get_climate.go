@@ -32,10 +32,10 @@ func ListClimate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	climateDatas := make(map[string]entities.Climate)
+	climateDatas := make(map[string]entities.Accident)
 
 	for climate, jsonData := range data {
-		var datas entities.Climate
+		var datas entities.Accident
 		err := json.Unmarshal([]byte(jsonData), &datas)
 
 		if err != nil {

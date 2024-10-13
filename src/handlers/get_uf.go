@@ -33,10 +33,10 @@ func ListUF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stateDatas := make(map[string]entities.UF)
+	stateDatas := make(map[string]entities.Accident)
 
 	for state, jsonData := range data {
-		var datas entities.UF
+		var datas entities.Accident
 		err := json.Unmarshal([]byte(jsonData), &datas)
 
 		if err != nil {
