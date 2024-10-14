@@ -26,8 +26,9 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn string) map[string]
 
 	amountDeathColumn := findColumnIndex(file, "qtde_obitos")
 	amountInvolvedColumn := findColumnIndex(file, "qtde_envolvidos")
+	amountInjuredColumn := findColumnIndex(file, "qtde_feridosilesos")
 
-	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 {
+	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 || amountInjuredColumn == -1 {
 		log.Fatal("Coluna definida ou data_acidente não encontrada no cabeçalho")
 	}
 
@@ -53,7 +54,7 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn string) map[string]
 		}
 
 		wg.Add(1)
-		go processFilePart(filePath, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, &wg, &counts)
+		go processFilePart(filePath, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, amountInjuredColumn, &wg, &counts)
 	}
 
 	// Aguardar todas as goroutines

@@ -14,6 +14,7 @@ type AccidentData struct {
 	TotalAccident int `json:"total_accident"`
 	TotalDeath    int `json:"total_death"`
 	TotalInvolved int `json:"total_involved"`
+	TotalInjured  int `json:"total_injured"`
 }
 
 // Define a struct Year, que inclui a informação da coluna desejada
@@ -22,7 +23,7 @@ type YearData struct {
 	TotalAcciden map[string]*AccidentData
 }
 
-func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
+func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, amountInjuredColumn int, wg *sync.WaitGroup, counts *sync.Map) {
 	defer wg.Done()
 
 	file, err := os.Open(filePath)
@@ -93,8 +94,13 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 		}
 		amountInvolved, _ := strconv.Atoi(amountInvolvedStr)
 
-		// fmt.Println(date)
-		// year := date[:4] // Assume que o ano está nos primeiros 4 caracteres da data
+		// Ler e somar `amountInvolved`
+		idx = 0
+		var amountInjuredStr string
+		for i := 0; i <= amountInjuredColumn; i++ {
+			amountInjuredStr = nextColumn(line, &idx, ";")
+		}
+		amountInjured, _ := strconv.Atoi(amountInjuredStr)
 
 		// Carregar ou inicializar o YearData para o ano atual
 		yearDataInterface, _ := counts.LoadOrStore(date, &YearData{
@@ -110,6 +116,7 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 		yearData.TotalAcciden[columnName].TotalAccident++
 		yearData.TotalAcciden[columnName].TotalDeath += amountDeath
 		yearData.TotalAcciden[columnName].TotalInvolved += amountInvolved
+		yearData.TotalAcciden[columnName].TotalInjured += amountInjured
 		yearData.mu.Unlock()
 
 		currentPos += int64(len(line))
