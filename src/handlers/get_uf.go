@@ -13,7 +13,7 @@ import (
 func ListUF(w http.ResponseWriter, r *http.Request) {
 
 	// Obter o parâmetro da URL "dados"
-	redisKey := r.URL.Query().Get("dados")
+	redisKey := r.URL.Query().Get("data")
 
 	// Definindo um contexto para o Redis
 	ctx := context.Background()
@@ -33,14 +33,14 @@ func ListUF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stateDatas := make(map[string]entities.UF)
+	stateDatas := make(map[string]entities.Accident)
 
 	for state, jsonData := range data {
-		var datas entities.UF
+		var datas entities.Accident
 		err := json.Unmarshal([]byte(jsonData), &datas)
 
 		if err != nil {
-			http.Error(w, "Erro ao desserializar dados do estado "+state, http.StatusInternalServerError)
+			http.Error(w, "Erro ao desserializar dados do uf "+state, http.StatusInternalServerError)
 			return
 		}
 

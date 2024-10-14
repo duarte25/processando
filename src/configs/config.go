@@ -1,8 +1,10 @@
 package configs
 
 import (
+	"os"
+	"strconv" // Para converter string para int
+
 	"github.com/go-redis/redis/v8"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -12,13 +14,7 @@ var (
 
 // Config estrutura para as configurações da aplicação
 type Config struct {
-	API   APIConfig
 	Redis RedisConfig
-}
-
-// APIConfig estrutura para as configurações da API
-type APIConfig struct {
-	Port string
 }
 
 // RedisConfig estrutura para as configurações do Redis
@@ -28,31 +24,24 @@ type RedisConfig struct {
 	DB       int
 }
 
-// Load carrega as configurações do arquivo e inicializa o cliente Redis
+// Load carrega as configurações das variáveis de ambiente e inicializa o cliente Redis
 func Load() error {
-	viper.SetConfigName("config")
-	viper.SetConfigType("toml")
-	viper.AddConfigPath(".")
-
-	err := viper.ReadInConfig()
+	// Converte a variável REDIS_DB para int
+	db, err := strconv.Atoi(os.Getenv("REDIS_DB"))
 	if err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return err
-		}
+		db = 0 // Valor padrão caso REDIS_DB não esteja definido corretamente
 	}
 
-	cfg = new(Config)
-
-	cfg.API = APIConfig{
-		Port: viper.GetString("api.port"),
+	// Configurações do Redis obtidas diretamente das variáveis de ambiente
+	cfg = &Config{
+		Redis: RedisConfig{
+			Addr:     os.Getenv("REDIS_ADDR"),     // Endereço do Redis
+			Password: os.Getenv("REDIS_PASSWORD"), // Senha do Redis
+			DB:       db,                          // Banco de dados do Redis (inteiro)
+		},
 	}
 
-	cfg.Redis = RedisConfig{
-		Addr:     viper.GetString("redis.addr"),
-		Password: viper.GetString("redis.password"),
-		DB:       viper.GetInt("redis.db"),
-	}
-
+	// Inicializar o cliente Redis com as configurações carregadas
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     cfg.Redis.Addr,
 		Password: cfg.Redis.Password,
@@ -60,11 +49,6 @@ func Load() error {
 	})
 
 	return nil
-}
-
-// GetServerPort retorna a porta do servidor
-func GetServerPort() string {
-	return cfg.API.Port
 }
 
 // GetRedisClient retorna o cliente Redis

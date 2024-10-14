@@ -1,4 +1,4 @@
-package acidente
+package accident
 
 import "strings"
 

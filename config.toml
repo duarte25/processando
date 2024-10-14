@@ -1,7 +1,0 @@
-[api]
-port = "8090"
-
-[redis]
-addr = "localhost:6379"
-password = ""
-db = 0

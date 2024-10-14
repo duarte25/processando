@@ -5,30 +5,38 @@ import (
 	"fmt"
 	"log"
 	"processando/src/configs"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
 
 func Controller() {
-	// Carregar as configurações
-	err := configs.Load()
-	if err != nil {
-		log.Fatalf("Erro ao carregar configurações: %v", err)
-	}
 
 	ctx := context.Background()
 
 	// Obter o cliente Redis do pacote configs
 	rdb := configs.GetRedisClient()
-	defer rdb.Close()
 
-	// if !validation(rdb, ctx) {
-	createDataUF(rdb, ctx)
-	// }
+	start := time.Now()
+
+	if !validation(rdb, ctx) {
+		createDataUF(rdb, ctx)
+		createDataClimate(rdb, ctx)
+		createDataHighway(rdb, ctx)
+		createDataSpeed(rdb, ctx)
+		createDataShoulder(rdb, ctx)
+		createDataGuardrail(rdb, ctx)
+		createDataMedian(rdb, ctx)
+	}
+
+	elapsed := time.Since(start)
+	fmt.Println(elapsed, "/")
+
+	fmt.Println("Dados inseridos em redis!")
 }
 
 func validation(rdb *redis.Client, ctx context.Context) bool {
-	key := "dados_acidentes_2021"
+	key := "data_uf_2021"
 
 	// Verificar se a chave existe
 	exists, err := rdb.Exists(ctx, key).Result()

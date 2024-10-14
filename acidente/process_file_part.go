@@ -1,4 +1,4 @@
-package acidente
+package accident
 
 import (
 	"bufio"
@@ -9,14 +9,21 @@ import (
 	"sync"
 )
 
-// Mapa para armazenar as contagens e somas por UF
-type UFData struct {
-	Count         int `json:"count"`
+// Mapa para armazenar as contagens e somas
+type AccidentData struct {
+	TotalAccident int `json:"total_accident"`
 	TotalDeath    int `json:"total_death"`
 	TotalInvolved int `json:"total_involved"`
+	TotalInjured  int `json:"total_injured"`
 }
 
-func processFilePart(filePath, year string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn int, wg *sync.WaitGroup, counts *sync.Map) {
+// Define a struct Year, que inclui a informação da coluna desejada
+type YearData struct {
+	mu           sync.Mutex
+	TotalAcciden map[string]*AccidentData
+}
+
+func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, amountInjuredColumn int, wg *sync.WaitGroup, counts *sync.Map) {
 	defer wg.Done()
 
 	file, err := os.Open(filePath)
@@ -38,11 +45,14 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		}
 	}
 
-	localCounts := make(map[string]*UFData)
 	currentPos := startOffset
 	for currentPos < endOffset {
 		line, err := reader.ReadString('\n')
 		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
+			fmt.Println("Erro ao ler a linha:", err)
 			break
 		}
 
@@ -52,20 +62,18 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 			date = nextColumn(line, &idx, ";")
 		}
 
-		if !strings.HasPrefix(date, year) {
+		if !strings.HasPrefix(date, "20") {
 			currentPos += int64(len(line))
 			continue
 		}
 
 		idx = 0
-		var uf string
+		var columnName string
 		for i := 0; i <= idxColumn; i++ {
-			uf = nextColumn(line, &idx, ";")
+			columnName = nextColumn(line, &idx, ";")
 		}
 
 		// Ler e somar `amountDeath`
-		// Inclui dessa forma pois é a ultima coluna e então para não acontecer erros na hora de calcular
-		// Erro na quebra de linha inclui esse trimspace mas somente nele acredito que os outros não quebrarão
 		idx = 0
 		var amountDeathStr string
 		for i := 0; i <= amountDeathColumn; i++ {
@@ -86,30 +94,31 @@ func processFilePart(filePath, year string, startOffset, endOffset int64, idxCol
 		}
 		amountInvolved, _ := strconv.Atoi(amountInvolvedStr)
 
-		// Atualizar os dados no mapa
-		if _, exists := localCounts[uf]; !exists {
-			localCounts[uf] = &UFData{}
+		// Ler e somar `amountInvolved`
+		idx = 0
+		var amountInjuredStr string
+		for i := 0; i <= amountInjuredColumn; i++ {
+			amountInjuredStr = nextColumn(line, &idx, ";")
 		}
-		localCounts[uf].Count++
-		localCounts[uf].TotalDeath += amountDeath
-		localCounts[uf].TotalInvolved += amountInvolved
+		amountInjured, _ := strconv.Atoi(amountInjuredStr)
+
+		// Carregar ou inicializar o YearData para o ano atual
+		yearDataInterface, _ := counts.LoadOrStore(date, &YearData{
+			TotalAcciden: make(map[string]*AccidentData),
+		})
+		yearData := yearDataInterface.(*YearData)
+
+		// Usar mutex para sincronizar o acesso ao mapa yearData
+		yearData.mu.Lock()
+		if _, exists := yearData.TotalAcciden[columnName]; !exists {
+			yearData.TotalAcciden[columnName] = &AccidentData{}
+		}
+		yearData.TotalAcciden[columnName].TotalAccident++
+		yearData.TotalAcciden[columnName].TotalDeath += amountDeath
+		yearData.TotalAcciden[columnName].TotalInvolved += amountInvolved
+		yearData.TotalAcciden[columnName].TotalInjured += amountInjured
+		yearData.mu.Unlock()
 
 		currentPos += int64(len(line))
-	}
-
-	/*
-		percorrendo um mapa (localCounts) que contém contagens de acidentes por unidade
-		e acumulando essas contagens em uma estrutura de dados chamada
-		counts, que é um sync.Map. Vamos detalhar cada linha do código
-	*/
-	for unit, data := range localCounts {
-		actual, _ := counts.LoadOrStore(unit, data)
-		if actual != data {
-			storedData := actual.(*UFData)
-			storedData.Count += data.Count
-			storedData.TotalDeath += data.TotalDeath
-			storedData.TotalInvolved += data.TotalInvolved
-			counts.Store(unit, storedData)
-		}
 	}
 }
