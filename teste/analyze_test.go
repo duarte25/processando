@@ -15,7 +15,7 @@ func TestAnalyzeAccidentData(t *testing.T) {
 	}
 
 	// Executa a função que queremos testar
-	results := accident.AnalyzeAccidentData("../Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
+	results := accident.AnalyzeAccidentData("../Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente", "", "")
 
 	// Verifica os resultados esperados para o ano de 2022
 	expectedData2022 := map[string]*accident.AccidentData{

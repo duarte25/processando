@@ -12,7 +12,7 @@ import (
 
 func createDataUF(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente")
+	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente", "", "")
 
 	// Itera sobre os dados e insere no Redis
 	// SE PÀ CONSIGO MUDAR ISSO PARA ACONTECER EM OUTRO ARQUIVO AI ACONTECERA TUDO DE UMA VEZ COM TODOS OS DADOS

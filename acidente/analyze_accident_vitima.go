@@ -1,18 +1,12 @@
 package accident
 
 import (
-	"bufio"
 	"log"
 	"os"
-	"strings"
 	"sync"
 )
 
-const (
-	numParts = 8 // Número de partes para dividir o arquivo
-)
-
-func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, indexFilterValue string) map[string]*YearData {
+func AnalyzeAccidentDataVitima(filePath, indexToColumn, dateColumn string) map[string]*YearData {
 	// Abre o arquivo e insere no file
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -28,18 +22,7 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, index
 	amountInvolvedColumn := findColumnIndex(file, "qtde_envolvidos")
 	amountInjuredColumn := findColumnIndex(file, "qtde_feridosilesos")
 
-	filterColumn := findColumnIndex(file, indexFilterValue)
-
-	if indexFilterValue != "" {
-		filterColumn = findColumnIndex(file, indexFilterValue)
-		if filterColumn == -1 {
-			log.Fatal("Coluna de filtro não encontrada no cabeçalho")
-		}
-	} else {
-		filterColumn = -1
-	}
-
-	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 || amountInjuredColumn == -1 || filterColumn == -1 {
+	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 || amountInjuredColumn == -1 {
 		log.Fatal("Coluna definida ou data_acidente não encontrada no cabeçalho")
 	}
 
@@ -64,6 +47,9 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, index
 			endOffset = fileSize
 		}
 
+		filterValue := "MOTORISTA"
+		filterColumn := 9
+
 		wg.Add(1)
 		go processFilePart(filePath, startOffset, endOffset, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, amountInjuredColumn, filterColumn, filterValue, &wg, &counts)
 	}
@@ -73,6 +59,7 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, index
 
 	// Copiar os dados do sync.Map para um novo map[string]*YearData
 	result := make(map[string]*YearData)
+
 	counts.Range(func(key, value interface{}) bool {
 		year := key.(string)
 		yearData := value.(*YearData)
@@ -82,21 +69,4 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, index
 
 	// Exibir o mapa de dados copiados
 	return result
-}
-
-func findColumnIndex(file *os.File, columnName string) int {
-	file.Seek(0, 0)
-	scanner := bufio.NewScanner(file)
-	if !scanner.Scan() {
-		return -1 // Arquivo vazio ou erro ao ler
-	}
-	header := scanner.Text()
-	columns := strings.Split(header, ";")
-
-	for i, col := range columns {
-		if strings.TrimSpace(col) == columnName {
-			return i
-		}
-	}
-	return -1 // Coluna não encontrada
 }

@@ -23,7 +23,14 @@ type YearData struct {
 	TotalAcciden map[string]*AccidentData
 }
 
-func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, amountInjuredColumn int, wg *sync.WaitGroup, counts *sync.Map) {
+func processFilePart(
+	filePath string,
+	startOffset, endOffset int64,
+	idxColumn, dateColumnIndex, amountDeathColumn, amountInvolvedColumn, amountInjuredColumn, filterColumn int,
+	filterValue string,
+	wg *sync.WaitGroup,
+	counts *sync.Map,
+) {
 	defer wg.Done()
 
 	file, err := os.Open(filePath)
@@ -54,6 +61,20 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 			}
 			fmt.Println("Erro ao ler a linha:", err)
 			break
+		}
+
+		// Se o filtro estiver habilitado (não vazio), verificar a coluna
+		if filterValue != "" {
+			idx := 0
+			var filterColumnValue string
+			for i := 0; i <= filterColumn; i++ {
+				filterColumnValue = nextColumn(line, &idx, ";")
+			}
+
+			if strings.TrimSpace(filterColumnValue) != filterValue {
+				currentPos += int64(len(line))
+				continue
+			}
 		}
 
 		idx := 0
@@ -94,7 +115,7 @@ func processFilePart(filePath string, startOffset, endOffset int64, idxColumn, d
 		}
 		amountInvolved, _ := strconv.Atoi(amountInvolvedStr)
 
-		// Ler e somar `amountInvolved`
+		// Ler e somar `amountInjured`
 		idx = 0
 		var amountInjuredStr string
 		for i := 0; i <= amountInjuredColumn; i++ {

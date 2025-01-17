@@ -10,24 +10,20 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func createDataHighway(rdb *redis.Client, ctx context.Context) {
+func createDataSusAlcool(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "tp_pavimento", "ano_acidente", "", "")
+	result := accident.AnalyzeAccidentData("./Vitimas_DadosAbertos_20230512.csv", "susp_alcool", "ano_acidente", "MOTORISTA", "tp_envolvido")
 
-	// Mapeamento de nomes originais para novos nomes
 	nameMapping := map[string]string{
-		"CASCALHO":       "gravel",
-		"NAO INFORMADO":  "not_informed",
-		"DESCONHECIDO":   "unknown",
-		"ASFALTO":        "asphalt",
-		"CONCRETO":       "concrete",
-		"PARALELEPIPEDO": "paving_stone",
-		"TERRA":          "earth",
+		"NAO INFORMADO": "note_informed",
+		"DESCONHECIDO":  "unknown",
+		"SIM":           "yes",
+		"NAO":           "not",
+		"NAO APLICAVEL": "not_applicable",
 	}
 
-	// Itera sobre os dados e insere no Redis
 	for year, yearData := range result {
-		redisKey := fmt.Sprintf("data_highway_%s", year)
+		redisKey := fmt.Sprintf("data_susp_alcool%s", year)
 
 		for highway, count := range yearData.TotalAcciden {
 

@@ -12,7 +12,7 @@ import (
 
 func createDataSpeed(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "lim_velocidade", "ano_acidente")
+	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "lim_velocidade", "ano_acidente", "", "")
 
 	// Mapeamento de nomes originais para novos nomes
 	nameMapping := map[string]string{
