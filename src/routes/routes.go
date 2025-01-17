@@ -14,5 +14,6 @@ func RegisterRoutes(router *chi.Mux) {
 	router.Get("/median", handlers.ListMedian)
 	router.Get("/shoulder", handlers.ListShoulder)
 	router.Get("/speed", handlers.ListSpeed)
+	router.Get("/susp_alcohol", handlers.ListSuspAlcohol)
 	// Adicione outras rotas aqui, usando handlers do pacote "handlers"
 }

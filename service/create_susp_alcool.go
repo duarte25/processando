@@ -23,7 +23,7 @@ func createDataSusAlcool(rdb *redis.Client, ctx context.Context) {
 	}
 
 	for year, yearData := range result {
-		redisKey := fmt.Sprintf("data_susp_alcool%s", year)
+		redisKey := fmt.Sprintf("data_susp_alcohol_%s", year)
 
 		for highway, count := range yearData.TotalAcciden {
 
