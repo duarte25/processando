@@ -39,7 +39,7 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, index
 		filterColumn = -1
 	}
 
-	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 || amountInjuredColumn == -1 || filterColumn == -1 {
+	if idxColumn == -1 || dateColumnIndex == -1 || amountDeathColumn == -1 || amountInvolvedColumn == -1 || amountInjuredColumn == -1 {
 		log.Fatal("Coluna definida ou data_acidente não encontrada no cabeçalho")
 	}
 

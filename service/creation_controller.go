@@ -20,13 +20,13 @@ func Controller() {
 	start := time.Now()
 
 	if !validation(rdb, ctx) {
-		// createDataUF(rdb, ctx)
-		// createDataClimate(rdb, ctx)
-		// createDataHighway(rdb, ctx)
-		// createDataSpeed(rdb, ctx)
-		// createDataShoulder(rdb, ctx)
-		// createDataGuardrail(rdb, ctx)
-		// createDataMedian(rdb, ctx)
+		createDataUF(rdb, ctx)
+		createDataClimate(rdb, ctx)
+		createDataHighway(rdb, ctx)
+		createDataSpeed(rdb, ctx)
+		createDataShoulder(rdb, ctx)
+		createDataGuardrail(rdb, ctx)
+		createDataMedian(rdb, ctx)
 		createDataSusAlcool(rdb, ctx)
 	}
 
