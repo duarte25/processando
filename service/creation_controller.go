@@ -28,6 +28,10 @@ func Controller() {
 		createDataGuardrail(rdb, ctx)
 		createDataMedian(rdb, ctx)
 		createDataSusAlcool(rdb, ctx)
+		createDataDayWeek(rdb, ctx)
+		createDataMonth(rdb, ctx)
+		createDataPhaseDay(rdb, ctx)
+		createDataTrackCondition(rdb, ctx)
 	}
 
 	elapsed := time.Since(start)
