@@ -10,6 +10,14 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+// @Summary Listar tabelas de dia da semana (Day Week)
+// @Description Retorna uma lista com os valores de dia da semana e na base do parâmetro e com os valores de total de acidentes, total de óbitos, total de envolvidos e feridos.
+// @Tags day_week
+// @Accept json
+// @Produce json
+// @Param data query string true "Identificador dos dados a serem recuperados (ex.: data_day_week_2022)" sendo os 4 últimos dígitos o ano a ser pesquisado, estando presente na base de dados os anos de 2018 a 2023.
+// @Success 200 {array} string "Lista de guarda corpo"
+// @Router /day_week [get]
 func ListDayWeek(w http.ResponseWriter, r *http.Request) {
 	// Obter o parâmetro da URL "dados"
 	redisKey := r.URL.Query().Get("data")

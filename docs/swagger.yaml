@@ -1,0 +1,276 @@
+info:
+  contact: {}
+paths:
+  /climate:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com os valores de clima e na base do parâmetro
+        e com os valores de total de acidentes, total de óbitos, total de envolvidos
+        e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_climate_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de guarda corpo
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de clima (Climate)
+      tags:
+      - climate
+  /day_week:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com os valores de dia da semana e na base do
+        parâmetro e com os valores de total de acidentes, total de óbitos, total de
+        envolvidos e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_day_week_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de guarda corpo
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de dia da semana (Day Week)
+      tags:
+      - day_week
+  /guardrail:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com os valores de guarda-corpo e na base do parâmetro
+        e com os valores de total de acidentes, total de óbitos, total de envolvidos
+        e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_guardrail_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de guarda corpo
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de guarda-corpo (Guardrail)
+      tags:
+      - guardrail
+  /highway:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com os valores de via rodoviária e na base do
+        parâmetro e com os valores de total de acidentes, total de óbitos, total de
+        envolvidos e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_highway_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de canteiro central
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de via rodoviária (Highway)
+      tags:
+      - highway
+  /median:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com os valores de canteiro central e na base
+        do parâmetro e com os valores de total de acidentes, total de óbitos, total
+        de envolvidos e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_median_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de canteiro central
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de canteiro central (Median)
+      tags:
+      - median
+  /month:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com os meses do ano e na base do parâmetro e
+        com os valores de total de acidentes, total de óbitos, total de envolvidos
+        e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_month_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de mês do ano
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de mês do ano (Month)
+      tags:
+      - month
+  /phase_day:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com as fase do dia e na base do parâmetro e com
+        os valores de total de acidentes, total de óbitos, total de envolvidos e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_phase_day_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de fase do dia
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas fase do dia (Phase Day)
+      tags:
+      - phase_day
+  /shoulder:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de acostamento com base no parâmetro e com os
+        valores de total de acidentes, total de óbitos, total de envolvidos e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_shoulder_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de acostamento
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de acostamento (Shoulder)
+      tags:
+      - shoulder
+  /speed:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de limite de velocidade com base no parâmetro
+        e com os valores de total de acidentes, total de óbitos, total de envolvidos
+        e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_speed_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de limite de velocidade da via
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas de velocidade (Speed)
+      tags:
+      - speed
+  /susp_alcohol:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de suspeito de álcool com base no parâmetro e
+        com os valores de total de acidentes, total de óbitos, total de envolvidos
+        e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_susp_alcohol_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de suspeito de álcool
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar tabelas suspeito de álcool
+      tags:
+      - susp_alcohol
+  /uf:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de UFs com base no parâmetro e com os valores
+        de total de acidentes, total de óbitos, total de envolvidos e feridos.
+      parameters:
+      - description: 'Identificador dos dados a serem recuperados (ex.: data_uf_2022)'
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de UFs
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Listar unidades federativas (UFs)
+      tags:
+      - UF
+swagger: "2.0"

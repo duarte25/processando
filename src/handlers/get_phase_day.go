@@ -10,6 +10,14 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+// @Summary Listar tabelas fase do dia (Phase Day)
+// @Description Retorna uma lista com as fase do dia e na base do parâmetro e com os valores de total de acidentes, total de óbitos, total de envolvidos e feridos.
+// @Tags phase_day
+// @Accept json
+// @Produce json
+// @Param data query string true "Identificador dos dados a serem recuperados (ex.: data_phase_day_2022)" sendo os 4 últimos dígitos o ano a ser pesquisado, estando presente na base de dados os anos de 2018 a 2023.
+// @Success 200 {array} string "Lista de fase do dia"
+// @Router /phase_day [get]
 func ListPhaseDay(w http.ResponseWriter, r *http.Request) {
 	// Obter o parâmetro da URL "dados"
 	redisKey := r.URL.Query().Get("data")

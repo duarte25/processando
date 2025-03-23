@@ -3,10 +3,15 @@ package routes
 import (
 	"processando/src/handlers"
 
+	_ "processando/docs"
+
 	"github.com/go-chi/chi"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func RegisterRoutes(router *chi.Mux) {
+	router.Get("/swagger/*", httpSwagger.WrapHandler)
+
 	router.Get("/uf", handlers.ListUF) // Chama Get diretamente
 	router.Get("/climate", handlers.ListClimate)
 	router.Get("/guardrail", handlers.ListGuardrail)
