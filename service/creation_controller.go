@@ -19,7 +19,7 @@ func Controller() {
 
 	start := time.Now()
 
-	if !validation(rdb, ctx) {
+	if !Validation(rdb, ctx) {
 		createDataUF(rdb, ctx)
 		createDataClimate(rdb, ctx)
 		createDataHighway(rdb, ctx)
@@ -40,7 +40,7 @@ func Controller() {
 	fmt.Println("Dados inseridos em redis!")
 }
 
-func validation(rdb *redis.Client, ctx context.Context) bool {
+func Validation(rdb *redis.Client, ctx context.Context) bool {
 	key := "data_uf_2021"
 
 	// Verificar se a chave existe
