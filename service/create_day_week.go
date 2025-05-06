@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	accident "processando/acidente"
 
 	"github.com/go-redis/redis/v8"
@@ -12,7 +13,9 @@ import (
 
 func createDataDayWeek(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "dia_semana", "ano_acidente", "", "")
+	file := os.Getenv("ACIDENTE_FILE")
+
+	result := accident.AnalyzeAccidentData(file, "dia_semana", "ano_acidente", "", "")
 
 	// Mapeamento de nomes originais para novos nomes
 	nameMapping := map[string]string{

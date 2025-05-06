@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	accident "processando/acidente"
 
 	"github.com/go-redis/redis/v8"
@@ -12,7 +13,9 @@ import (
 
 func createDataClimate(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "cond_meteorologica", "ano_acidente", "", "")
+	file := os.Getenv("ACIDENTE_FILE")
+
+	result := accident.AnalyzeAccidentData(file, "cond_meteorologica", "ano_acidente", "", "")
 
 	// Mapeamento de nomes originais para novos nomes
 	nameMapping := map[string]string{

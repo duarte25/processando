@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	accident "processando/acidente"
 
 	"github.com/go-redis/redis/v8"
@@ -12,7 +13,9 @@ import (
 
 func createDataSusAlcool(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Vitimas_DadosAbertos_20230512.csv", "susp_alcool", "ano_acidente", "MOTORISTA", "tp_envolvido")
+	file := os.Getenv("VITIMA_FILE")
+
+	result := accident.AnalyzeAccidentData(file, "susp_alcool", "ano_acidente", "MOTORISTA", "tp_envolvido")
 
 	nameMapping := map[string]string{
 		"NAO INFORMADO": "note_informed",

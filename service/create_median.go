@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	accident "processando/acidente"
 
 	"github.com/go-redis/redis/v8"
@@ -12,7 +13,9 @@ import (
 
 func createDataMedian(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "ind_cantcentral", "ano_acidente", "", "")
+	file := os.Getenv("ACIDENTE_FILE")
+
+	result := accident.AnalyzeAccidentData(file, "ind_cantcentral", "ano_acidente", "", "")
 
 	// Mapeamento de nomes originais para novos nomes
 	nameMapping := map[string]string{

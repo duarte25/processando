@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	accident "processando/acidente"
 
 	"github.com/go-redis/redis/v8"
@@ -12,7 +13,9 @@ import (
 
 func createDataUF(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "uf_acidente", "ano_acidente", "", "")
+	file := os.Getenv("ACIDENTE_FILE")
+
+	result := accident.AnalyzeAccidentData(file, "uf_acidente", "ano_acidente", "", "")
 
 	// Itera sobre os dados e insere no Redis
 	// SE PÀ CONSIGO MUDAR ISSO PARA ACONTECER EM OUTRO ARQUIVO AI ACONTECERA TUDO DE UMA VEZ COM TODOS OS DADOS

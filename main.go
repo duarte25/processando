@@ -12,6 +12,7 @@ import (
 	"syscall"
 
 	"github.com/go-chi/chi"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -19,6 +20,11 @@ func main() {
 	err := configs.Load()
 	if err != nil {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("Erro ao carregar .env")
 	}
 
 	service.Controller()

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	accident "processando/acidente"
 
 	"github.com/go-redis/redis/v8"
@@ -12,7 +13,9 @@ import (
 
 func createDataMonth(rdb *redis.Client, ctx context.Context) {
 
-	result := accident.AnalyzeAccidentData("./Acidentes_DadosAbertos_20230412.csv", "mes_acidente", "ano_acidente", "", "")
+	file := os.Getenv("ACIDENTE_FILE")
+
+	result := accident.AnalyzeAccidentData(file, "mes_acidente", "ano_acidente", "", "")
 
 	// Itera sobre os dados e insere no Redis
 	for year, yearData := range result {
