@@ -38,6 +38,10 @@ Este projeto desenvolveu uma aplicação para análise e agrupamento de dados de
 
 - Configurar as variáveis de ambiente.
 
+### Acessar drive e baixar arquivos CSV.
+
+- https://drive.google.com/drive/folders/1r2Pr1TFnJYFOovVZJaFNv3fgOMPAAC-7?usp=sharing
+
 ### Passos para Execução
 
 #### *1. Rode o comando abaixo:*
