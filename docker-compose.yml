@@ -1,14 +1,19 @@
-version: '3.8'
-
 services:
   redis:
+    restart: unless-stopped
     image: redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - net
 
-  app:
+  adat-api:
+    restart: unless-stopped
+    container_name: adat-api
+    volumes:
+      - ./dados_csv:/app/dados_csv
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,11 +22,18 @@ services:
     depends_on:
       - redis
     env_file:
-      - .env                 
+      - .env
     environment:
       - REDIS_ADDR=${REDIS_ADDR}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_DB=${REDIS_DB}
+    networks:
+      - net
 
 volumes:
   redis_data:
+
+networks:
+  net:
+    name: net-adat
+    external: true

@@ -2,3 +2,6 @@
 *.txt
 
 .env
+tmp
+processando
+dados_csv
