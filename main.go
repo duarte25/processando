@@ -29,6 +29,13 @@ func main() {
 
 	service.Controller()
 
+	// start := time.Now()
+
+	// sequencial.Acidente("acidentes.csv")
+
+	// duration := time.Since(start) // calcula a duração
+	// fmt.Printf("Tempo de execução: %s\n", duration)
+
 	// Definindo rotas
 	r := chi.NewRouter()
 
