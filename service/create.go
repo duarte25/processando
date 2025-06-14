@@ -39,6 +39,7 @@ func CreateData(rdb *redis.Client, ctx context.Context) {
 	insertToRedis(rdb, ctx, result.YearDataByShoulder, "data_shoulder_")
 	insertToRedis(rdb, ctx, result.YearDataByGuardrail, "data_guardrail_")
 	insertToRedis(rdb, ctx, result.YearDataByMedian, "data_median_")
+	insertToRedis(rdb, ctx, result.YearDataByHighway, "data_highway_")
 }
 
 func insertToRedis(rdb *redis.Client, ctx context.Context, data map[string]*accident.YearData, prefix string) {

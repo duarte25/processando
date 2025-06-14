@@ -20,23 +20,9 @@ func Controller() {
 	start := time.Now()
 
 	if !Validation(rdb, ctx) {
-		CreateData(rdb, ctx) // Toda a lógica aqui
+		CreateData(rdb, ctx)
+		createDataSusAlcool(rdb, ctx)
 	}
-
-	// if !Validation(rdb, ctx) {
-	// 	createDataUF(rdb, ctx)
-	// 	createDataClimate(rdb, ctx)
-	// 	// createDataHighway(rdb, ctx)
-	// 	createDataSpeed(rdb, ctx)
-	// 	createDataShoulder(rdb, ctx)
-	// 	createDataGuardrail(rdb, ctx)
-	// 	createDataMedian(rdb, ctx)
-	// 	// createDataSusAlcool(rdb, ctx)
-	// 	createDataDayWeek(rdb, ctx)
-	// 	createDataMonth(rdb, ctx)
-	// 	createDataPhaseDay(rdb, ctx)
-	// 	createDataTrackCondition(rdb, ctx)
-	// }
 
 	elapsed := time.Since(start)
 	fmt.Println(elapsed, "/")

@@ -13,7 +13,7 @@ func ProcessFilePartAll(
 	filePath string,
 	startOffset, endOffset int64,
 	columns []string,
-	idxUF, idxDate, idxClimate, idxSpeed, idxTrack, idxPhaseDay, idxMonth, idxDayWeek, idxShoulder, idxGuardrail, idxMedian, idxDeaths, idxInjured, idxInvolved int,
+	idxUF, idxDate, idxClimate, idxSpeed, idxTrack, idxPhaseDay, idxMonth, idxDayWeek, idxShoulder, idxGuardrail, idxMedian, idxHighway, idxDeaths, idxInjured, idxInvolved int,
 	wg *sync.WaitGroup,
 	results *sync.Map,
 ) {
@@ -108,6 +108,9 @@ func ProcessFilePartAll(
 		}
 		if idxMedian >= 0 {
 			updateMap("median", "canteiro_central", safeGetValue(row, idxMedian))
+		}
+		if idxHighway >= 0 {
+			updateMap("highway", "tp_pavimento", safeGetValue(row, idxHighway))
 		}
 	}
 }
