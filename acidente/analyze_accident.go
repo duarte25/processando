@@ -1,15 +1,9 @@
 package accident
 
 import (
-	"bufio"
 	"log"
 	"os"
-	"strings"
 	"sync"
-)
-
-const (
-	numParts = 8 // Número de partes para dividir o arquivo
 )
 
 func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, indexFilterValue string) map[string]*YearData {
@@ -82,21 +76,4 @@ func AnalyzeAccidentData(filePath, indexToColumn, dateColumn, filterValue, index
 
 	// Exibir o mapa de dados copiados
 	return result
-}
-
-func findColumnIndex(file *os.File, columnName string) int {
-	file.Seek(0, 0)
-	scanner := bufio.NewScanner(file)
-	if !scanner.Scan() {
-		return -1 // Arquivo vazio ou erro ao ler
-	}
-	header := scanner.Text()
-	columns := strings.Split(header, ";")
-
-	for i, col := range columns {
-		if strings.TrimSpace(col) == columnName {
-			return i
-		}
-	}
-	return -1 // Coluna não encontrada
 }
