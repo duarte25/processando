@@ -27,6 +27,16 @@ func main() {
 		log.Fatal("Erro ao carregar .env")
 	}
 
+	// f, err := os.Create("trace.out")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// if err := trace.Start(f); err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer trace.Stop()
+	// defer f.Close()
+
 	service.Controller()
 
 	// start := time.Now()
